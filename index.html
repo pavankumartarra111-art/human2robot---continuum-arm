@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Continuum Morph-Arm Simulation // Workcell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- MediaPipe Hands & Camera Utils -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="h-screen w-screen flex flex-col bg-[#ffffff] text-[#0f172a] select-none overflow-hidden">
+
+  <!-- TOP TOOLBAR (LARGE CRISP PROMINENT FONTS, NATURE ACCENT) -->
+  <header class="h-14 shrink-0 border-b border-[#cbd5e1] bg-[#ffffff] px-4 sm:px-6 flex items-center justify-between gap-4 z-30 select-none">
+    <div class="flex items-center gap-3.5 min-w-0">
+      <span class="text-base sm:text-lg font-mono font-bold tracking-wider text-[#1e293b] uppercase">Continuum Arm Simulation</span>
+      <span class="text-sm font-mono text-[#cbd5e1]">|</span>
+      <span class="text-sm sm:text-base font-mono font-semibold text-[#475569]">Laboratory Workcell v1.2</span>
+      <!-- Hidden status text element to satisfy legacy bindings without errors -->
+      <span id="global-status-text" class="hidden"></span>
+      <span id="global-status-pill" class="hidden"></span>
+    </div>
+
+    <!-- Primary Controls (Large 15px font buttons) -->
+    <div class="flex items-center gap-3 shrink-0">
+      <button id="btn-start-webcam" class="btn-tech">
+        <svg class="w-4.5 h-4.5 text-[#475569]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+        <span id="btn-webcam-label">Start Webcam</span>
+      </button>
+
+      <button id="btn-flip-cam" class="btn-tech hidden" title="Switch Front/Rear Camera">
+        Flip Camera
+      </button>
+
+      <button id="btn-auto-mode" class="btn-tech">
+        <span id="auto-dot" class="w-3 h-3 bg-[#94a3b8] rounded-none"></span>
+        <span id="btn-auto-label">Autonomous Mode</span>
+      </button>
+
+      <button id="btn-reset-scene" class="btn-tech btn-tech-dim">
+        Reset
+      </button>
+    </div>
+  </header>
+
+  <!-- 50/50 SPLIT-SCREEN WORKSPACE -->
+  <main class="flex-1 grid grid-cols-1 md:grid-cols-2 w-full h-[calc(100vh-3.5rem-5rem)] overflow-hidden relative">
+
+    <!-- LEFT PANE: HUMAN DEMONSTRATION / PERCEPTION FEED -->
+    <section id="left-pane" class="relative w-full h-full overflow-hidden border-b md:border-b-0 md:border-r border-[#cbd5e1] bg-[#f8fafc]">
+      <video id="webcam-video" class="hidden absolute inset-0 w-full h-full object-cover" playsinline muted></video>
+      <canvas id="perception-canvas" class="w-full h-full object-cover cursor-crosshair"></canvas>
+
+      <!-- Minimal technical viewport tag with natural moss accent (Large font) -->
+      <div class="absolute top-3 left-3 pointer-events-none z-10 flex items-center gap-2.5 px-3 py-1.5 bg-[#ffffff]/95 border border-[#94a3b8] text-sm font-mono font-bold text-[#1e293b] shadow-sm">
+        <span class="w-2.5 h-2.5 bg-[#4a6b47] inline-block"></span>
+        <span>CAM_01 // TRACKING</span>
+      </div>
+
+      <!-- Hidden elements to preserve JS references cleanly -->
+      <span id="cam-live-dot" class="hidden"></span>
+      <span id="cam-sub-hint" class="hidden"></span>
+      <span id="human-phase-badge" class="hidden"></span>
+
+      <!-- Camera Warning Alert (if blocked) -->
+      <div id="cam-fallback-banner" class="hidden absolute top-14 left-4 right-4 px-3.5 py-2.5 bg-[#fffbeb] border border-[#fde68a] text-[#92400e] text-sm font-mono flex items-center justify-between z-20 rounded-none shadow-sm">
+        <span>Camera input unavailable. Interactive virtual pointer active (Click &amp; Drag to move/pinch).</span>
+        <button id="btn-dismiss-banner" class="ml-2 px-2.5 py-1 bg-[#fef3c7] border border-[#fcd34d] text-[#92400e] text-xs font-bold hover:bg-[#fde68a] rounded-none cursor-pointer">DISMISS</button>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: 3D SIMULATION WORKCELL (WHITE LABORATORY BACKGROUND) -->
+    <section id="right-pane" class="relative w-full h-full overflow-hidden bg-[#ffffff]">
+      <canvas id="three-canvas" class="w-full h-full"></canvas>
+
+      <!-- Minimal technical viewport tag with natural slate accent (Large font) -->
+      <div class="absolute top-3 left-3 pointer-events-none z-10 flex items-center gap-2.5 px-3 py-1.5 bg-[#ffffff]/95 border border-[#94a3b8] text-sm font-mono font-bold text-[#1e293b] shadow-sm">
+        <span class="w-2.5 h-2.5 bg-[#3e5c6b] inline-block"></span>
+        <span>SIM_3D // KINEMATICS</span>
+      </div>
+
+      <!-- Hidden elements to preserve JS references cleanly -->
+      <span id="robot-exec-badge" class="hidden"></span>
+    </section>
+  </main>
+
+  <!-- DOCKED BOTTOM TELEMETRY BAR (LARGE PROMINENT FONTS, NATURAL EARTH COLORS, RECTANGULAR) -->
+  <footer class="h-20 shrink-0 border-t border-[#cbd5e1] bg-[#ffffff] px-4 sm:px-6 py-3 z-30 select-none">
+    <div class="w-full h-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 items-center font-mono">
+      
+      <!-- T1 Tension (Natural Terracotta Clay) -->
+      <div class="telemetry-card">
+        <div class="flex justify-between items-center">
+          <span class="telemetry-label text-[#c2593f]">T1 TENSION</span>
+          <span id="tele-t1" class="telemetry-value text-[#991b1b]">13.4 N</span>
+        </div>
+        <div class="gauge-track">
+          <div id="bar-t1" class="gauge-fill bg-[#c2593f]" style="width: 48%"></div>
+        </div>
+      </div>
+
+      <!-- T2 Tension (Natural Forest Moss) -->
+      <div class="telemetry-card">
+        <div class="flex justify-between items-center">
+          <span class="telemetry-label text-[#4a6b47]">T2 TENSION</span>
+          <span id="tele-t2" class="telemetry-value text-[#166534]">12.1 N</span>
+        </div>
+        <div class="gauge-track">
+          <div id="bar-t2" class="gauge-fill bg-[#4a6b47]" style="width: 43%"></div>
+        </div>
+      </div>
+
+      <!-- T3 Tension (Natural River Slate) -->
+      <div class="telemetry-card">
+        <div class="flex justify-between items-center">
+          <span class="telemetry-label text-[#3e5c6b]">T3 TENSION</span>
+          <span id="tele-t3" class="telemetry-value text-[#1e40af]">15.8 N</span>
+        </div>
+        <div class="gauge-track">
+          <div id="bar-t3" class="gauge-fill bg-[#3e5c6b]" style="width: 56%"></div>
+        </div>
+      </div>
+
+      <!-- Curvature (Natural Warm Ochre) -->
+      <div class="telemetry-card justify-center">
+        <div class="telemetry-label text-[#cf8a2c]">CURVATURE (κ)</div>
+        <div id="tele-curvature" class="telemetry-value text-[#92400e] text-base mt-1">1.38 m⁻¹</div>
+      </div>
+
+      <!-- Active Task Phase (Natural Walnut Timber) -->
+      <div class="telemetry-card justify-center">
+        <div class="telemetry-label text-[#7d4e38]">ACTIVE PHASE</div>
+        <div id="tele-phase" class="telemetry-value text-[#78350f] text-base mt-1 truncate">APPROACH</div>
+      </div>
+
+      <!-- Tower Stacked & Placement Error (Natural Deep Pine / River Stone) -->
+      <div class="telemetry-card flex-row items-center justify-between">
+        <div>
+          <div class="telemetry-label text-[#2e5e3a]">TOWER STACK</div>
+          <div class="telemetry-value text-[#14532d] text-base mt-1"><span id="tele-stacked">0</span> / 5</div>
+        </div>
+        <div class="text-right">
+          <div class="telemetry-label text-[#475569]">ERROR</div>
+          <div id="tele-error" class="telemetry-value text-[#334155] text-base mt-1">4.1 mm</div>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MODULAR SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/perception.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
