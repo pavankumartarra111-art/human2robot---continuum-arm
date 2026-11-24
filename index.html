@@ -9,7 +9,7 @@
   <!-- MediaPipe Hands & Camera Utils -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css" onerror="this.onerror=null;this.href='style.css';" />
 </head>
 <body class="h-screen w-screen flex flex-col bg-[#ffffff] text-[#0f172a] select-none overflow-hidden">
 
@@ -153,10 +153,10 @@
     </div>
   </footer>
 
-  <!-- MODULAR SCRIPTS -->
-  <script src="js/config.js"></script>
-  <script src="js/perception.js"></script>
-  <script src="js/simulation.js"></script>
-  <script src="js/app.js"></script>
+  <!-- MODULAR SCRIPTS (PRIMARY js/ WITH ROOT FALLBACK FOR DEPLOYED HOSTS) -->
+  <script src="js/config.js" onerror="this.onerror=null;this.src='config.js';"></script>
+  <script src="js/perception.js" onerror="this.onerror=null;this.src='perception.js';"></script>
+  <script src="js/simulation.js" onerror="this.onerror=null;this.src='simulation.js';"></script>
+  <script src="js/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
 </body>
 </html>

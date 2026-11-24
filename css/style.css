@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* Strict rectangular engineering aesthetic - No rounded corners */
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-radius: 0px !important;
+}
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-focus: #94a3b8;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+
+  /* Nature-Inspired Earthen Tones (Non-AI) */
+  --nature-terracotta: #c2593f;
+  --nature-moss: #4a6b47;
+  --nature-ochre: #cf8a2c;
+  --nature-slate: #3e5c6b;
+  --nature-walnut: #7d4e38;
+
+  /* Tendon Telemetry Natural Accent Palette */
+  --accent-t1: #c2593f; /* Natural Terracotta Clay */
+  --accent-t2: #4a6b47; /* Natural Forest Moss */
+  --accent-t3: #3e5c6b; /* Natural River Slate */
+
+  --font-mono: 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+body {
+  font-family: var(--font-mono);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Crisp 1px scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+}
+
+/* Viewport canvas */
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Technical Buttons (Increased font size & distinct natural styling) */
+.btn-tech {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 18px;
+  background-color: var(--bg-panel);
+  color: #1e293b;
+  border: 1px solid var(--border-strong);
+  transition: background-color 120ms ease, border-color 120ms ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  outline: none;
+}
+
+.btn-tech:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-focus);
+}
+
+.btn-tech:active {
+  background-color: #e2e8f0;
+}
+
+.btn-tech-dim {
+  background-color: var(--bg-secondary);
+  color: #475569;
+  border-color: var(--border-subtle);
+}
+
+.btn-tech-dim:hover {
+  background-color: #e2e8f0;
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+/* Bottom Telemetry Card (Large prominent fonts & natural colors) */
+.telemetry-card {
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.telemetry-label {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.telemetry-value {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.gauge-track {
+  width: 100%;
+  height: 10px;
+  background-color: #e2e8f0;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  transition: width 75ms linear;
+}
