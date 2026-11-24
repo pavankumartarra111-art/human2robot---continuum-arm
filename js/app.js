@@ -62,8 +62,35 @@ document.getElementById('btn-flip-cam').addEventListener('click', () => {
 });
 
 document.getElementById('btn-auto-mode').addEventListener('click', () => {
+  if (typeof RobotAudio !== 'undefined') RobotAudio.resume();
   enableAutonomousMode(!state.autonomousMode);
 });
+
+// Sound Toggle Button & Audio Unlock
+const btnSound = document.getElementById('btn-sound-toggle');
+const iconSoundOn = document.getElementById('icon-sound-on');
+const iconSoundOff = document.getElementById('icon-sound-off');
+const lblSound = document.getElementById('btn-sound-label');
+
+if (btnSound) {
+  btnSound.addEventListener('click', () => {
+    if (typeof RobotAudio !== 'undefined') {
+      const active = RobotAudio.toggle();
+      if (lblSound) lblSound.textContent = active ? 'Sound: ON' : 'Sound: OFF';
+      if (iconSoundOn) iconSoundOn.classList.toggle('hidden', !active);
+      if (iconSoundOff) iconSoundOff.classList.toggle('hidden', active);
+    }
+  });
+}
+
+// User interaction gesture unlocks AudioContext per browser autoplay policy
+const unlockAudioContext = () => {
+  if (typeof RobotAudio !== 'undefined') RobotAudio.resume();
+  window.removeEventListener('pointerdown', unlockAudioContext);
+  window.removeEventListener('keydown', unlockAudioContext);
+};
+window.addEventListener('pointerdown', unlockAudioContext);
+window.addEventListener('keydown', unlockAudioContext);
 
 document.getElementById('btn-reset-scene').addEventListener('click', () => {
   state.humanCompletedFirstBox = false;

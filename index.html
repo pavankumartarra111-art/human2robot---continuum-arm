@@ -42,6 +42,17 @@
         <span id="btn-auto-label">Autonomous Mode</span>
       </button>
 
+      <button id="btn-sound-toggle" class="btn-tech" title="Toggle Robot Sound Effects">
+        <svg id="icon-sound-on" class="w-4.5 h-4.5 text-[#475569]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+        </svg>
+        <svg id="icon-sound-off" class="w-4.5 h-4.5 text-[#94a3b8] hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        <span id="btn-sound-label">Sound: ON</span>
+      </button>
+
       <button id="btn-reset-scene" class="btn-tech btn-tech-dim">
         Reset
       </button>
@@ -154,6 +165,7 @@
   </footer>
 
   <!-- MODULAR SCRIPTS (PRIMARY js/ WITH ROOT FALLBACK FOR DEPLOYED HOSTS) -->
+  <script src="js/audio.js" onerror="this.onerror=null;this.src='audio.js';"></script>
   <script src="js/config.js" onerror="this.onerror=null;this.src='config.js';"></script>
   <script src="js/perception.js" onerror="this.onerror=null;this.src='perception.js';"></script>
   <script src="js/simulation.js" onerror="this.onerror=null;this.src='simulation.js';"></script>

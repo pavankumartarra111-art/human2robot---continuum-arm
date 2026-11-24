@@ -7,6 +7,8 @@
 let scene, camera, renderer;
 let robotBaseGroup, shoulderGroup, upperLinkGroup, continuumGroup, wristGroup, gripperGroup;
 let leftFingerGroup, rightFingerGroup;
+let prevWristPos = new THREE.Vector3();
+let prevPinchState = false;
 let vertebraGroups = [];
 let tendonLines = [];
 let boxMeshes = [];
@@ -470,6 +472,9 @@ function commitRobotBoxStack() {
   const stackY = (state.stackedCount * wc.boxSize) + wc.boxSize / 2 + 0.008;
   box.position.set(wc.targetZone.x, stackY, wc.targetZone.z);
 
+  // Play realistic solid contact impact sound
+  if (typeof RobotAudio !== 'undefined') RobotAudio.playPlacementImpact();
+
   state.stackedCount++;
   const elStacked = document.getElementById('tele-stacked');
   if (elStacked) elStacked.textContent = state.stackedCount;
@@ -626,6 +631,20 @@ function updateContinuumArmKinematics(targetPos) {
   const fingerTravel = state.isPinching ? 0.024 : 0.046;
   leftFingerGroup.position.x = -fingerTravel;
   rightFingerGroup.position.x = fingerTravel;
+
+  // Audio: trigger micro-servo clamp/release sound on state change
+  if (state.isPinching !== prevPinchState) {
+    if (typeof RobotAudio !== 'undefined') RobotAudio.playGripper(state.isPinching);
+    prevPinchState = state.isPinching;
+  }
+
+  // Audio: dynamically modulate motor whir based on wrist travel velocity
+  if (typeof RobotAudio !== 'undefined') {
+    const travelDist = wristPos.distanceTo(prevWristPos);
+    const speed = travelDist * 40;
+    RobotAudio.updateMotor(speed, bendArch);
+  }
+  prevWristPos.copy(wristPos);
 
   // 6. Handle Active Workpiece Grasping & Release
   const activeBox = boxMeshes[state.activeBoxIdx];

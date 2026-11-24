@@ -6,6 +6,12 @@ A high-fidelity 3D robotics simulation combining a photo-matched hybrid continuu
 
 ## Workcell & Natural Material Features
 
+- **Realistic Industrial Robot Sound Effects (Web Audio API):**
+  - **Dynamic Servo & Stepper Motor Whir:** Real-time dual-oscillator acoustic synthesis modulating in frequency (95Hz to 260Hz) and volume based on arm velocity and curvature.
+  - **Micro-Servo Gripper Clamping & Release:** Realistic electromechanical actuation sounds when grasping and releasing workpiece blocks.
+  - **Docking Contact Impact:** Solid physical touchdown impulse when docking blocks onto the tower stack.
+  - **100% Client-Side Synthesized:** Zero external audio file downloads or CORS issues. Includes toolbar toggle button (`Sound: ON/OFF`).
+
 - **5 Nature-Inspired Workpiece Block Materials (Non-AI):**
   - **Box 1 - Terracotta Clay (`#c2593f` / `0xc2593f`):** Natural earthenware fired red clay.
   - **Box 2 - Forest Moss (`#4a6b47` / `0x4a6b47`):** Natural woodland moss and deep foliage leaf.
